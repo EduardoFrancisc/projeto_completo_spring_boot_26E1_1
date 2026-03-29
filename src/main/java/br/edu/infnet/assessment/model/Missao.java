@@ -1,0 +1,46 @@
+package br.edu.infnet.assessment.model;
+
+import br.edu.infnet.assessment.enums.NivelPerigo;
+import br.edu.infnet.assessment.enums.StatusMissao;
+import jakarta.persistence.*;
+import lombok.Data;
+import java.time.OffsetDateTime;
+
+@Data
+@Entity
+@Table(name = "missoes", schema = "aventura")
+public class Missao {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "organizacao_id", nullable = false)
+    private Organizacao organizacao;
+
+    @Column(nullable = false, length = 150)
+    private String titulo;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "nivel_perigo", nullable = false)
+    private NivelPerigo nivelPerigo;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private StatusMissao status;
+
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private OffsetDateTime createdAt;
+
+    @Column(name = "data_inicio")
+    private OffsetDateTime dataInicio;
+
+    @Column(name = "data_termino")
+    private OffsetDateTime dataTermino;
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = OffsetDateTime.now();
+    }
+}
