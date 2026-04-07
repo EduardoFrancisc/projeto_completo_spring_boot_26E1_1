@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  # 1. Banco de Dados PostgreSQL
+  db:
+    image: leogloriainfnet/postgres-tp2-spring:2.0-mac
+    container_name: postgres-tp2-db
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=123456
+      - POSTGRES_DB=postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  # 2. Motor de Busca Elasticsearch (Imagem atualizada)
+  elasticsearch:
+    image: leogloriainfnet/elastic-tp2-spring:1.0-windows
+    container_name: elasticsearch-tp2
+    environment:
+      - discovery.type=single-node
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ports:
+      - "9200:9200"
+    volumes:
+      - elastic_data:/usr/share/elasticsearch/data
+
+volumes:
+  postgres_data:
+  elastic_data:

@@ -54,13 +54,13 @@ public class MissaoController {
 
 
     @GetMapping("/{id}")
-    public ResponseEntity<br.edu.infnet.assessment.dto.MissaoDetalheResponseDTO> getById(@PathVariable Long id) {
+    public ResponseEntity<MissaoDetalheResponseDTO> getById(@PathVariable Long id) {
 
         Missao missao = missaoService.buscarPorId(id);
 
-        java.util.List<ParticipacaoMissao> participacoes = participacaoService.buscarPorMissao(id);
+        List<ParticipacaoMissao> participacoes = participacaoService.buscarPorMissao(id);
 
-        br.edu.infnet.assessment.dto.MissaoDetalheResponseDTO dto = new br.edu.infnet.assessment.dto.MissaoDetalheResponseDTO(missao, participacoes);
+        MissaoDetalheResponseDTO dto = new MissaoDetalheResponseDTO(missao, participacoes);
 
         return ResponseEntity.ok(dto);
     }

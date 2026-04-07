@@ -39,4 +39,11 @@ public class Missao {
     @Column(name = "data_fim")
     private OffsetDateTime data_fim;
 
+    @PrePersist
+    protected void onCreate() {
+        if (this.createdAt == null) {
+            this.createdAt = OffsetDateTime.now();
+        }
+    }
+
 }
