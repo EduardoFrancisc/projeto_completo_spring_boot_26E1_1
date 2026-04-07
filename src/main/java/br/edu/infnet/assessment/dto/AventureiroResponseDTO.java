@@ -18,7 +18,7 @@ public class AventureiroResponseDTO {
     private String nomeUsuarioResponsavel;
     private CompanheiroResponseDTO companheiro;
 
-    public AventureiroResponseDTO(Aventureiro a) {
+    public AventureiroResponseDTO(Aventureiro a, br.edu.infnet.assessment.model.Companheiro c) {
         this.id = a.getId();
         this.nome = a.getNome();
         this.classe = a.getClasse();
@@ -34,11 +34,12 @@ public class AventureiroResponseDTO {
             this.nomeUsuarioResponsavel = a.getUsuarioResponsavel().getNome();
         }
 
-        if (a.getCompanheiro() != null) {
+        // Lê a partir do objeto 'c' injetado, em vez do aventureiro
+        if (c != null) {
             this.companheiro = new CompanheiroResponseDTO(
-                    a.getCompanheiro().getNome(),
-                    a.getCompanheiro().getEspecie().name(),
-                    a.getCompanheiro().getLealdade()
+                    c.getNome(),
+                    c.getEspecie().name(),
+                    c.getIndice_lealdade()
             );
         }
     }

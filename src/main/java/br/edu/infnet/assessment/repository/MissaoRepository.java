@@ -20,7 +20,7 @@ public interface MissaoRepository extends JpaRepository<Missao, Long> {
             org.springframework.data.domain.Pageable pageable);
 
     @Query("SELECT new br.edu.infnet.assessment.dto.RelatorioMissaoDTO(" +
-            "m.titulo, m.status, m.nivelPerigo, COUNT(p.id), COALESCE(SUM(p.recompensaOuro), 0L)) " +
+            "m.titulo, m.status, m.nivelPerigo, COUNT(p.id), COALESCE(SUM(p.recompensaOuro), 0.0)) " +
             "FROM Missao m " +
             "LEFT JOIN ParticipacaoMissao p ON p.missao = m " +
             "WHERE (CAST(:dataInicio AS string) IS NULL OR m.createdAt >= :dataInicio) " +

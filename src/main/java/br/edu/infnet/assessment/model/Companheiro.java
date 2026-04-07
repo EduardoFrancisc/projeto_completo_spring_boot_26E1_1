@@ -1,23 +1,17 @@
 package br.edu.infnet.assessment.model;
 
 import br.edu.infnet.assessment.enums.EspecieCompanheiro;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import jakarta.persistence.*;
 
 @Data
 @Entity
-@Table(name = "companheiros", schema = "aventura")
+@Table(name = "companheiro", schema = "operacoes")
 public class Companheiro {
 
     @Id
-    private Long id;
-
-    @JsonIgnore
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
-    @MapsId
-    @JoinColumn(name = "aventureiro_id")
-    private Aventureiro aventureiro;
+    @Column(name = "aventureiro_id")
+    private Long aventureiroId;
 
     @Column(nullable = false, length = 120)
     private String nome;
@@ -27,5 +21,5 @@ public class Companheiro {
     private EspecieCompanheiro especie;
 
     @Column(nullable = false)
-    private Integer lealdade;
+    private Integer indice_lealdade;
 }

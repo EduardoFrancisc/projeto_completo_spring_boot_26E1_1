@@ -1,6 +1,7 @@
 package br.edu.infnet.assessment.service;
 
 import br.edu.infnet.assessment.dto.AventureiroPerfilResponseDTO;
+import br.edu.infnet.assessment.dto.CompanheiroRequestDTO;
 import br.edu.infnet.assessment.exception.RecursoNaoEncontradoException;
 import br.edu.infnet.assessment.model.Aventureiro;
 import br.edu.infnet.assessment.dto.AventureiroRequestDTO;
@@ -8,10 +9,7 @@ import br.edu.infnet.assessment.exception.ValidacaoException;
 import br.edu.infnet.assessment.model.Companheiro;
 import br.edu.infnet.assessment.model.Organizacao;
 import br.edu.infnet.assessment.model.Usuario;
-import br.edu.infnet.assessment.repository.AventureiroRepository;
-import br.edu.infnet.assessment.repository.OrganizacaoRepository;
-import br.edu.infnet.assessment.repository.ParticipacaoMissaoRepository;
-import br.edu.infnet.assessment.repository.UsuarioRepository;
+import br.edu.infnet.assessment.repository.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -27,15 +25,16 @@ public class AventureiroService {
     private final OrganizacaoRepository organizacaoRepository;
     private final UsuarioRepository usuarioRepository;
     private final ParticipacaoMissaoRepository participacaoMissaoRepository;
+    private final CompanheiroRepository companheiroRepository;
 
-    // O Spring injeta o repository automaticamente aqui
     public AventureiroService(AventureiroRepository aventureiroRepository,
                               OrganizacaoRepository organizacaoRepository,
-                              UsuarioRepository usuarioRepository, ParticipacaoMissaoRepository participacaoMissaoRepository) {
+                              UsuarioRepository usuarioRepository, ParticipacaoMissaoRepository participacaoMissaoRepository, CompanheiroRepository companheiroRepository) {
         this.aventureiroRepository = aventureiroRepository;
         this.organizacaoRepository = organizacaoRepository;
         this.usuarioRepository = usuarioRepository;
         this.participacaoMissaoRepository = participacaoMissaoRepository;
+        this.companheiroRepository = companheiroRepository;
     }
 
     public List<Aventureiro> getAll() {
@@ -64,7 +63,6 @@ public class AventureiroService {
 
         // Regras estritas da criação:
         novoAventureiro.setAtivo(true);
-        novoAventureiro.setCompanheiro(null);
 
         // Salva no PostgreSQL
         return aventureiroRepository.save(novoAventureiro);
@@ -125,7 +123,7 @@ public class AventureiroService {
         return aventureiroRepository.save(aventureiro); // <-- Adicionado o save
     }
 
-    private void validarCompanheiro(br.edu.infnet.assessment.dto.CompanheiroRequestDTO dto) {
+    private void validarCompanheiro(CompanheiroRequestDTO dto) {
         java.util.List<String> erros = new java.util.ArrayList<>();
 
         if (dto.getNome() == null || dto.getNome().trim().isEmpty()) {
@@ -139,33 +137,32 @@ public class AventureiroService {
         }
 
         if (!erros.isEmpty()) {
-            throw new br.edu.infnet.assessment.exception.ValidacaoException(erros);
+            throw new ValidacaoException(erros);
         }
     }
 
-    // 7️⃣ Definir ou substituir companheiro
     @Transactional
-    public Aventureiro salvarCompanheiro(Long idAventureiro, br.edu.infnet.assessment.dto.CompanheiroRequestDTO dto) {
-
+    public Companheiro salvarCompanheiro(Long idAventureiro, CompanheiroRequestDTO dto) {
         Aventureiro aventureiro = buscarPorId(idAventureiro);
-
         validarCompanheiro(dto);
 
-        Companheiro companheiro = new Companheiro();
+        // Atualiza se já existir, ou cria um novo
+        Companheiro companheiro = companheiroRepository.findById(idAventureiro)
+                .orElse(new Companheiro());
+
+        companheiro.setAventureiroId(aventureiro.getId());
         companheiro.setNome(dto.getNome().trim());
         companheiro.setEspecie(dto.getEspecie());
-        companheiro.setLealdade(dto.getLealdade());
-        companheiro.setAventureiro(aventureiro);
+        companheiro.setIndice_lealdade(dto.getLealdade());
 
-        aventureiro.setCompanheiro(companheiro);
-        return aventureiroRepository.save(aventureiro);
+        return companheiroRepository.save(companheiro);
     }
 
     @Transactional
     public void removerCompanheiro(Long idAventureiro) {
-        Aventureiro aventureiro = buscarPorId(idAventureiro);
-        aventureiro.setCompanheiro(null);
-        aventureiroRepository.save(aventureiro);
+        if (companheiroRepository.existsById(idAventureiro)) {
+            companheiroRepository.deleteById(idAventureiro);
+        }
     }
 
     public Page<Aventureiro> buscarPorNome(String nome, Pageable pageable) {
@@ -174,9 +171,7 @@ public class AventureiroService {
 
     public AventureiroPerfilResponseDTO obterPerfilCompleto(Long id) {
         Aventureiro a = buscarPorId(id);
-
         Long totalParticipacoes = participacaoMissaoRepository.countByAventureiroId(id);
-
         String ultimaMissao = participacaoMissaoRepository.findTopByAventureiroIdOrderByDataRegistroDesc(id)
                 .map(p -> p.getMissao().getTitulo())
                 .orElse("Nenhuma missão registrada");
@@ -190,15 +185,17 @@ public class AventureiroService {
         perfil.setTotalParticipacoes(totalParticipacoes);
         perfil.setTituloUltimaMissao(ultimaMissao);
 
-        if (a.getCompanheiro() != null) {
-            perfil.setNomeCompanheiro(a.getCompanheiro().getNome());
-            perfil.setEspecieCompanheiro(a.getCompanheiro().getEspecie().name());
+        // AQUI: Busca o companheiro através do repositório
+        Companheiro c = companheiroRepository.findById(id).orElse(null);
+        if (c != null) {
+            perfil.setNomeCompanheiro(c.getNome());
+            perfil.setEspecieCompanheiro(c.getEspecie().name());
         }
 
         return perfil;
     }
 
-
-
-
+    public Companheiro buscarCompanheiro(Long idAventureiro) {
+        return companheiroRepository.findById(idAventureiro).orElse(null);
+    }
 }

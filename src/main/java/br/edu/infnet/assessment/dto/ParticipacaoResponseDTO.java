@@ -7,14 +7,12 @@ import java.time.OffsetDateTime;
 
 @Data
 public class ParticipacaoResponseDTO {
-    private Long id;
     private String tituloMissao;
     private String nomeAventureiro;
     private PapelMissao papel;
     private OffsetDateTime dataRegistro;
 
     public ParticipacaoResponseDTO(ParticipacaoMissao p) {
-        this.id = p.getId();
         this.papel = p.getPapel();
         this.dataRegistro = p.getDataRegistro();
         this.tituloMissao = p.getMissao().getTitulo();

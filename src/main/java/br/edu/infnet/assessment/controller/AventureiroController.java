@@ -1,11 +1,13 @@
 package br.edu.infnet.assessment.controller;
 
-import br.edu.infnet.assessment.dto.AventureiroResponseDTO;
-import br.edu.infnet.assessment.dto.AventureiroResumoDTO;
+import br.edu.infnet.assessment.dto.*;
 import br.edu.infnet.assessment.enums.ClasseAventureiro;
 import br.edu.infnet.assessment.model.Aventureiro;
-import br.edu.infnet.assessment.dto.AventureiroRequestDTO;
+import br.edu.infnet.assessment.model.Companheiro;
 import br.edu.infnet.assessment.service.AventureiroService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +24,11 @@ public class AventureiroController {
         this.aventureiroService = service;
     }
 
+    private AventureiroResponseDTO montarResponse(Aventureiro a) {
+        Companheiro c = aventureiroService.buscarCompanheiro(a.getId());
+        return new AventureiroResponseDTO(a, c);
+    }
+
     @GetMapping
     public ResponseEntity<List<AventureiroResumoDTO>> getAll(
             @RequestParam(required = false) ClasseAventureiro classe,
@@ -36,7 +43,7 @@ public class AventureiroController {
                 .filter(a -> classe == null || a.getClasse() == classe)
                 .filter(a -> ativo == null || a.getAtivo().equals(ativo))
                 .filter(a -> nivelMinimo == null || a.getNivel() >= nivelMinimo)
-                .sorted(java.util.Comparator.comparing(Aventureiro::getId)) // <-- ORDENAÇÃO ADICIONADA AQUI
+                .sorted(java.util.Comparator.comparing(Aventureiro::getId))
                 .map(a -> new AventureiroResumoDTO(a))
                 .toList();
 
@@ -59,69 +66,60 @@ public class AventureiroController {
 
     @GetMapping("/{id}")
     public ResponseEntity<AventureiroResponseDTO> buscarPorId(@PathVariable Long id) {
-
         Aventureiro aventureiro = aventureiroService.buscarPorId(id);
-
-        AventureiroResponseDTO dtoResponse = new AventureiroResponseDTO(aventureiro);
-
-        return ResponseEntity.ok(dtoResponse);
+        return ResponseEntity.ok(montarResponse(aventureiro));
     }
 
     @PostMapping
     public ResponseEntity<AventureiroResponseDTO> registrar(@RequestBody AventureiroRequestDTO dto) {
         Aventureiro novo = aventureiroService.registrar(dto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(new AventureiroResponseDTO(novo));
+        return ResponseEntity.status(HttpStatus.CREATED).body(montarResponse(novo));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<AventureiroResponseDTO> atualizar(@PathVariable Long id, @RequestBody AventureiroRequestDTO dto) {
         Aventureiro atualizado = aventureiroService.atualizar(id, dto);
-        return ResponseEntity.ok(new AventureiroResponseDTO(atualizado));
+        return ResponseEntity.ok(montarResponse(atualizado));
     }
 
     @PatchMapping("/{id}/inativar")
     public ResponseEntity<AventureiroResponseDTO> inativar(@PathVariable Long id) {
         Aventureiro inativo = aventureiroService.inativar(id);
-        return ResponseEntity.ok(new AventureiroResponseDTO(inativo));
+        return ResponseEntity.ok(montarResponse(inativo));
     }
 
     @PatchMapping("/{id}/recrutar")
     public ResponseEntity<AventureiroResponseDTO> recrutar(@PathVariable Long id) {
         Aventureiro ativo = aventureiroService.recrutar(id);
-        return ResponseEntity.ok(new AventureiroResponseDTO(ativo));
+        return ResponseEntity.ok(montarResponse(ativo));
     }
 
     @PutMapping("/{id}/companheiro")
-    public ResponseEntity<AventureiroResponseDTO> salvarCompanheiro(
-            @PathVariable Long id,
-            @RequestBody br.edu.infnet.assessment.dto.CompanheiroRequestDTO dto) {
-
-        Aventureiro aventureiroAtualizado = aventureiroService.salvarCompanheiro(id, dto);
-
-        return ResponseEntity.ok(new AventureiroResponseDTO(aventureiroAtualizado));
+    public ResponseEntity<AventureiroResponseDTO> salvarCompanheiro(@PathVariable Long id, @RequestBody CompanheiroRequestDTO dto) {
+        aventureiroService.salvarCompanheiro(id, dto);
+        Aventureiro a = aventureiroService.buscarPorId(id);
+        return ResponseEntity.ok(montarResponse(a));
     }
 
     @DeleteMapping("/{id}/companheiro")
     public ResponseEntity<Void> removerCompanheiro(@PathVariable Long id) {
-
         aventureiroService.removerCompanheiro(id);
-
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/busca")
-    public ResponseEntity<org.springframework.data.domain.Page<br.edu.infnet.assessment.dto.AventureiroResponseDTO>> buscarPorNome(
+    public ResponseEntity<Page<AventureiroResponseDTO>> buscarPorNome(
             @RequestParam String nome,
-            @org.springframework.data.web.PageableDefault(size = 10, sort = "nome") org.springframework.data.domain.Pageable pageable) {
+            @PageableDefault(size = 10, sort = "nome") Pageable pageable) {
 
         var pagina = aventureiroService.buscarPorNome(nome, pageable)
-                .map(br.edu.infnet.assessment.dto.AventureiroResponseDTO::new);
+                .map(this::montarResponse); // <-- método auxiliar
 
         return ResponseEntity.ok(pagina);
     }
 
     @GetMapping("/{id}/perfil")
-    public ResponseEntity<br.edu.infnet.assessment.dto.AventureiroPerfilResponseDTO> getPerfilCompleto(@PathVariable Long id) {
+    public ResponseEntity<AventureiroPerfilResponseDTO> getPerfilCompleto(@PathVariable Long id) {
         return ResponseEntity.ok(aventureiroService.obterPerfilCompleto(id));
     }
 }

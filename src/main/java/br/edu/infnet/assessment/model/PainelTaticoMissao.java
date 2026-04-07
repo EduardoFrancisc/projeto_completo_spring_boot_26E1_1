@@ -7,6 +7,7 @@ import lombok.Data;
 import org.hibernate.annotations.Immutable;
 import org.hibernate.annotations.Subselect;
 
+import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 
 @Data
@@ -38,7 +39,7 @@ public class PainelTaticoMissao {
     private Double nivelMedioEquipe;
 
     @Column(name = "total_recompensa")
-    private Long totalRecompensa;
+    private BigDecimal totalRecompensa;
 
     @Column(name = "total_mvps")
     private Integer totalMvps;

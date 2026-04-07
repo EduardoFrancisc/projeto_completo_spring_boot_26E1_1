@@ -15,7 +15,7 @@ public interface AventureiroRepository extends JpaRepository<Aventureiro, Long> 
     Page<Aventureiro> findByNomeContainingIgnoreCase(String nome, Pageable pageable);
 
     @Query("SELECT new br.edu.infnet.assessment.dto.RankingAventureiroDTO(" +
-            "a.id, a.nome, COUNT(p.id), COALESCE(SUM(p.recompensaOuro), 0L), " +
+            "a.id, a.nome, COUNT(p.id), COALESCE(SUM(p.recompensaOuro), 0.0), " +
             "SUM(CASE WHEN p.destaqueMvp = true THEN 1L ELSE 0L END)) " +
             "FROM Aventureiro a " +
             "LEFT JOIN ParticipacaoMissao p ON p.aventureiro = a " +

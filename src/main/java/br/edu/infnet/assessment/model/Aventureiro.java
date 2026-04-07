@@ -7,7 +7,7 @@ import java.time.OffsetDateTime;
 
 @Data
 @Entity
-@Table(name = "aventureiros", schema = "aventura")
+@Table(name = "aventureiro", schema = "operacoes")
 public class Aventureiro {
 
     @Id
@@ -19,7 +19,7 @@ public class Aventureiro {
     private Organizacao organizacao;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "usuario_responsavel_id", nullable = false)
+    @JoinColumn(name = "usuario_cadastro_id", nullable = false)
     private Usuario usuarioResponsavel;
 
     @Column(nullable = false, length = 120)
@@ -35,13 +35,10 @@ public class Aventureiro {
     @Column(nullable = false)
     private Boolean ativo = true;
 
-    @OneToOne(mappedBy = "aventureiro", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Companheiro companheiro;
-
-    @Column(name = "created_at", nullable = false, updatable = false)
+    @Column(name = "data_criacao", nullable = false, updatable = false)
     private OffsetDateTime createdAt;
 
-    @Column(name = "updated_at", nullable = false)
+    @Column(name = "data_atualizacao", nullable = false)
     private OffsetDateTime updatedAt;
 
     @PrePersist

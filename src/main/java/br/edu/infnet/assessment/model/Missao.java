@@ -8,7 +8,7 @@ import java.time.OffsetDateTime;
 
 @Data
 @Entity
-@Table(name = "missoes", schema = "aventura")
+@Table(name = "missao", schema = "operacoes")
 public class Missao {
 
     @Id
@@ -30,17 +30,13 @@ public class Missao {
     @Column(nullable = false)
     private StatusMissao status;
 
-    @Column(name = "created_at", nullable = false, updatable = false)
+    @Column(name = "data_criacao", nullable = false, updatable = false)
     private OffsetDateTime createdAt;
 
     @Column(name = "data_inicio")
-    private OffsetDateTime dataInicio;
+    private OffsetDateTime data_inicio;
 
-    @Column(name = "data_termino")
-    private OffsetDateTime dataTermino;
+    @Column(name = "data_fim")
+    private OffsetDateTime data_fim;
 
-    @PrePersist
-    protected void onCreate() {
-        this.createdAt = OffsetDateTime.now();
-    }
 }
