@@ -46,7 +46,6 @@ public class AventureiroController {
                 .sorted(java.util.Comparator.comparing(Aventureiro::getId))
                 .map(a -> new AventureiroResumoDTO(a))
                 .toList();
-
         int totalElements = filtrados.size();
         int totalPages = (int) Math.ceil((double) totalElements / size);
         int pular = page * size;

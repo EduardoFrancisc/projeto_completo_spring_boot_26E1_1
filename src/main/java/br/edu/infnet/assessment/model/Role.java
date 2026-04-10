@@ -14,6 +14,7 @@ public class Role {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    //Cargos podem ser customizados por organização
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "organizacao_id", nullable = false)
     private Organizacao organizacao;
@@ -26,6 +27,7 @@ public class Role {
     @Column(name = "created_at")
     private OffsetDateTime createdAt;
 
+    //Agrupa de forma limpa quais permissões do sistema pertencem a qual cargo, cruzando os registros de forma relacional pura.
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "role_permissions",

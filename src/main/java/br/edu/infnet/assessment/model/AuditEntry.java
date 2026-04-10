@@ -13,6 +13,8 @@ public class AuditEntry {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    //O mapeamento aqui prioriza a rastreabilidade. Vários eventos (logs) sempre estarão apontando para quem o disparou (Usuário ou Automação/ApiKey).
+    //O FetchType.LAZY aqui é mandatório para não travar o banco: ao listar 1000 logs em uma tela, o sistema não fará centenas de requisições buscando os dados atrelados se a tela de relatório não solicitar.
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "organizacao_id", nullable = false)
     private Organizacao organizacao;

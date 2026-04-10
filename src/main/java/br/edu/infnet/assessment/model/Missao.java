@@ -15,6 +15,7 @@ public class Missao {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    //Várias missões são gerenciadas por uma organização
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "organizacao_id", nullable = false)
     private Organizacao organizacao;

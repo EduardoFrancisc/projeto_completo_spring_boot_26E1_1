@@ -43,7 +43,6 @@ public class PainelTaticoMissaoService {
     @CacheEvict(value = "rankingTatico", allEntries = true)
     @Scheduled(fixedRate = 300000)
     public void limparCacheRankingTatico() {
-        // O método fica vazio. O Spring usa as anotações para agir nos bastidores.
         System.out.println("Limpando o cache das top missões para buscar dados frescos!");
     }
 }

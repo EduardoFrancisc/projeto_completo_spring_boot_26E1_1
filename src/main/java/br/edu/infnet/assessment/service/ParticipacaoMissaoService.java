@@ -52,17 +52,12 @@ public class ParticipacaoMissaoService {
             throw new RecursoNaoEncontradoException("A missão não está em um estado que aceita novos participantes.");
         }
 
-        // 5. REGRA (Do BD): Participação única.
-        // Como colocamos o @UniqueConstraint na entidade, se tentar salvar de novo,
-        // o JPA/Banco vai estourar uma DataIntegrityViolationException.
-        // Estamos protegidos em duas camadas!
-
-        // Se passou em todas as regras, criamos o registro!
+        // Se passou em todas as regras, cria
         ParticipacaoMissao participacao = new ParticipacaoMissao();
         participacao.setMissao(missao);
         participacao.setAventureiro(aventureiro);
         participacao.setPapel(papel);
-        // dataRegistro será preenchida automaticamente pelo @PrePersist que fizemos
+        // dataRegistro será preenchida automaticamente pelo @PrePersist
 
         return participacaoRepository.save(participacao);
     }

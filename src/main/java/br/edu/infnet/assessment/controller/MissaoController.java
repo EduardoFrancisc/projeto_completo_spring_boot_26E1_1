@@ -42,26 +42,19 @@ public class MissaoController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) OffsetDateTime dataInicio,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) OffsetDateTime dataFim,
             @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
-
         Page<Missao> paginaMissoes =
                 missaoService.listarComFiltros(status, nivelPerigo, dataInicio, dataFim, pageable);
-
         Page<br.edu.infnet.assessment.dto.MissaoResponseDTO> paginaDTO =
                 paginaMissoes.map(br.edu.infnet.assessment.dto.MissaoResponseDTO::new);
-
         return ResponseEntity.ok(paginaDTO);
     }
 
 
     @GetMapping("/{id}")
     public ResponseEntity<MissaoDetalheResponseDTO> getById(@PathVariable Long id) {
-
         Missao missao = missaoService.buscarPorId(id);
-
         List<ParticipacaoMissao> participacoes = participacaoService.buscarPorMissao(id);
-
         MissaoDetalheResponseDTO dto = new MissaoDetalheResponseDTO(missao, participacoes);
-
         return ResponseEntity.ok(dto);
     }
 
@@ -75,18 +68,14 @@ public class MissaoController {
     public ResponseEntity<ParticipacaoResponseDTO> inscreverAventureiro(
             @PathVariable Long id,
             @RequestBody ParticipacaoRequestDTO dto) {
-
         ParticipacaoMissao participacao = participacaoService.registrarParticipacao(id, dto.getAventureiroId(), dto.getPapel());
-
         return ResponseEntity.status(HttpStatus.CREATED).body(new ParticipacaoResponseDTO(participacao));
     }
 
     @GetMapping("/top15dias")
     public ResponseEntity<List<PainelTaticoMissao>> getTop15Dias() {
-
         List<PainelTaticoMissao> topMissoes =
                 painelTaticoService.obterTop10MissoesUltimos15Dias();
-
         return ResponseEntity.ok(topMissoes);
     }
 }

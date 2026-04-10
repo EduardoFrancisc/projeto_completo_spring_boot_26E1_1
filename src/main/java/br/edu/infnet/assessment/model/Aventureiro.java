@@ -14,10 +14,14 @@ public class Aventureiro {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    //Vários aventureiros pertencem à mesma guilda (Organização)
+    //optional = false - ele é obrigado a ter uma organização atrelada para garantir o isolamento das informações.
+    //fetch = FetchType.LAZY foi usada para não sobrecarregar a memória da aplicação carregando os dados completos da organização toda vez que você busca o nome de um aventureiro.
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "organizacao_id", nullable = false)
     private Organizacao organizacao;
 
+    //Vários aventureiros são cadastrados pelo mesmo recrutador (Usuário).
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "usuario_cadastro_id", nullable = false)
     private Usuario usuarioResponsavel;

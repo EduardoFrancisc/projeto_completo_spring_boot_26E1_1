@@ -38,7 +38,7 @@ public class UsuarioLegadoService {
     // 3. Persistir um novo usuário associado a uma organização existente
     @Transactional
     public Usuario criarUsuarioNaOrganizacao(Long idOrganizacao, Usuario novoUsuario) {
-        // Busca a organização existente (se não achar, lança erro genérico, você pode tratar melhor depois)
+        // Busca a organização existente (se não achar, lança erro genérico)
         Organizacao org = organizacaoRepository.findById(idOrganizacao)
                 .orElseThrow(() -> new RuntimeException("Organização não encontrada"));
 

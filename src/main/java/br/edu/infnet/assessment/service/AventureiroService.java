@@ -107,20 +107,20 @@ public class AventureiroService {
         return aventureiroRepository.save(aventureiroExistente);
     }
 
-    // 5️⃣ Encerrar vínculo com a guilda
+    //Encerrar vínculo com a guilda
     @Transactional
     public Aventureiro inativar(Long id) {
         Aventureiro aventureiro = buscarPorId(id);
         aventureiro.setAtivo(false);
-        return aventureiroRepository.save(aventureiro); // <-- Adicionado o save
+        return aventureiroRepository.save(aventureiro);
     }
 
-    // 6️⃣ Recrutar novamente
+    //Recrutar novamente
     @Transactional
     public Aventureiro recrutar(Long id) {
         Aventureiro aventureiro = buscarPorId(id);
         aventureiro.setAtivo(true);
-        return aventureiroRepository.save(aventureiro); // <-- Adicionado o save
+        return aventureiroRepository.save(aventureiro);
     }
 
     private void validarCompanheiro(CompanheiroRequestDTO dto) {

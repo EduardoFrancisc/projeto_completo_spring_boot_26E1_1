@@ -14,6 +14,7 @@ public class Usuario {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    //Define que o usuário atua sob o guarda-chuva de uma guilda específica.
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "organizacao_id", nullable = false)
     private Organizacao organizacao;
@@ -37,6 +38,7 @@ public class Usuario {
     @Column(name = "updated_at")
     private OffsetDateTime updatedAt;
 
+    //o uso do @ManyToMany com @JoinTable delega a criação física da tabela user_roles diretamente para o Hibernate, poupando o desenvolvimento de ter que criar uma classe intermediária só para isso.
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "user_roles",
